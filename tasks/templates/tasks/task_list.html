@@ -1,0 +1,112 @@
+{% extends "tasks/base.html" %}
+{% block title %}Tasks{% endblock %}
+
+{% block nav_actions %}
+  <a href="{% url 'task_create' %}" class="btn btn-blue">+ New Task</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Tasks</h1>
+</div>
+
+<form method="get" class="filter-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search tasks...">
+  <select name="status">
+    <option value="">All Statuses</option>
+    {% for val, label in status_choices %}
+      <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="category">
+    <option value="">All Categories</option>
+    {% for cat in categories %}
+      <option value="{{ cat.pk }}" {% if category_filter == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-blue">Filter</button>
+  {% if query or status_filter or category_filter %}
+    <a href="{% url 'task_list' %}" class="btn btn-white">Clear</a>
+  {% endif %}
+</form>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr>
+        <th><a href="?q={{ query }}&status={{ status_filter }}&category={{ category_filter }}&sort={% if sort == 'title' %}-title{% else %}title{% endif %}">Title {% if sort == 'title' %}↑{% elif sort == '-title' %}↓{% endif %}</a></th>
+        <th><a href="?q={{ query }}&status={{ status_filter }}&category={{ category_filter }}&sort={% if sort == 'status' %}-status{% else %}status{% endif %}">Status {% if sort == 'status' %}↑{% elif sort == '-status' %}↓{% endif %}</a></th>
+        <th>Category</th>
+        <th>Priority</th>
+        <th><a href="?q={{ query }}&status={{ status_filter }}&category={{ category_filter }}&sort={% if sort == 'deadline' %}-deadline{% else %}deadline{% endif %}">Deadline {% if sort == 'deadline' %}↑{% elif sort == '-deadline' %}↓{% endif %}</a></th>
+        <th><a href="?q={{ query }}&status={{ status_filter }}&category={{ category_filter }}&sort={% if sort == 'created_at' %}-created_at{% else %}created_at{% endif %}">Created {% if sort == 'created_at' %}↑{% elif sort == '-created_at' %}↓{% endif %}</a></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>
+          <a href="{% url 'task_detail' task.pk %}" style="color: #1d4ed8; text-decoration: none; font-weight: 500;">{{ task.title }}</a>
+          {% if task.subtasks.count %}
+            <span class="mono text-muted" style="margin-left: 4px;">·{{ task.subtasks.count }}</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if task.is_overdue %}<span class="badge badge-overdue">Overdue</span>
+          {% elif task.status == "Completed" %}<span class="badge badge-completed">Completed</span>
+          {% elif task.status == "In Progress" %}<span class="badge badge-progress">In Progress</span>
+          {% else %}<span class="badge badge-pending">Pending</span>{% endif %}
+        </td>
+        <td class="text-muted">{{ task.category.name|default:"—" }}</td>
+        <td>
+          {% if task.priority %}<span style="display:inline-flex;align-items:center;gap:5px;"><span class="dot dot-{{ task.priority.level }}"></span>{{ task.priority.name }}</span>
+          {% else %}<span class="text-muted">—</span>{% endif %}
+        </td>
+        <td class="mono" style="color: {% if task.is_overdue %}#dc2626{% else %}#9ca3af{% endif %};">
+          {% if task.deadline %}{{ task.deadline|date:"M d, Y" }}{% else %}—{% endif %}
+        </td>
+        <td class="mono text-muted">{{ task.created_at|date:"M d, Y" }}</td>
+        <td>
+          <div style="display: flex; gap: 4px;">
+            <a href="{% url 'task_update' task.pk %}" class="btn btn-white btn-sm">Edit</a>
+            <a href="{% url 'task_delete' task.pk %}" class="btn btn-red btn-sm">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" style="text-align: center; padding: 48px; color: #9ca3af;">
+          No tasks found.
+          {% if not query and not status_filter and not category_filter %}
+            <a href="{% url 'task_create' %}" style="color: #1d4ed8;">Create one →</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if tasks.has_other_pages %}
+  <div class="pagination">
+    {% if tasks.has_previous %}
+      <a class="pg" href="?q={{ query }}&status={{ status_filter }}&category={{ category_filter }}&sort={{ sort }}&page={{ tasks.previous_page_number }}">‹</a>
+    {% else %}
+      <span class="pg disabled">‹</span>
+    {% endif %}
+    {% for i in tasks.paginator.page_range %}
+      {% if tasks.number == i %}
+        <span class="pg active">{{ i }}</span>
+      {% elif i > tasks.number|add:"-3" and i < tasks.number|add:"3" %}
+        <a class="pg" href="?q={{ query }}&status={{ status_filter }}&category={{ category_filter }}&sort={{ sort }}&page={{ i }}">{{ i }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if tasks.has_next %}
+      <a class="pg" href="?q={{ query }}&status={{ status_filter }}&category={{ category_filter }}&sort={{ sort }}&page={{ tasks.next_page_number }}">›</a>
+    {% else %}
+      <span class="pg disabled">›</span>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

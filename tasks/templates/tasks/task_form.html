@@ -1,0 +1,28 @@
+{% extends "tasks/base.html" %}
+{% block title %}{{ action }} Task{% endblock %}
+
+{% block nav_actions %}
+  {% if task %}<a href="{% url 'task_detail' task.pk %}" class="btn btn-white">Cancel</a>
+  {% else %}<a href="{% url 'task_list' %}" class="btn btn-white">Cancel</a>{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header"><h1>{{ action }} Task</h1></div>
+<div class="form-card">
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+      <label>{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<div class="form-error">{{ field.errors.as_text }}</div>{% endif %}
+    </div>
+    {% endfor %}
+    <div class="form-actions">
+      <button type="submit" class="btn btn-blue">{{ action }} Task</button>
+      {% if task %}<a href="{% url 'task_detail' task.pk %}" class="btn btn-white">Cancel</a>
+      {% else %}<a href="{% url 'task_list' %}" class="btn btn-white">Cancel</a>{% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

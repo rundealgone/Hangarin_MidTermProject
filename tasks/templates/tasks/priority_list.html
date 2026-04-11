@@ -1,0 +1,63 @@
+{% extends "tasks/base.html" %}
+{% block title %}Priorities{% endblock %}
+
+{% block nav_actions %}
+  <a href="{% url 'priority_create' %}" class="btn btn-blue">+ New Priority</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header"><h1>Priorities</h1></div>
+
+<form method="get" class="filter-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search priorities...">
+  <button type="submit" class="btn btn-blue">Search</button>
+  {% if query %}<a href="{% url 'priority_list' %}" class="btn btn-white">Clear</a>{% endif %}
+</form>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Level</th><th>Tasks</th><th>Created</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for priority in priorities %}
+      <tr>
+        <td style="font-weight: 500;"><span style="display:inline-flex;align-items:center;gap:5px;"><span class="dot dot-{{ priority.level }}"></span>{{ priority.name }}</span></td>
+        <td class="text-muted mono">{{ priority.level }}</td>
+        <td class="text-muted mono">{{ priority.task_set.count }}</td>
+        <td class="text-muted mono">{{ priority.created_at|date:"M d, Y" }}</td>
+        <td>
+          <div style="display: flex; gap: 4px;">
+            <a href="{% url 'priority_update' priority.pk %}" class="btn btn-white btn-sm">Edit</a>
+            <a href="{% url 'priority_delete' priority.pk %}" class="btn btn-red btn-sm">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">
+          No priorities. <a href="{% url 'priority_create' %}" style="color: #1d4ed8;">Create one →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if priorities.has_other_pages %}
+  <div class="pagination">
+    {% if priorities.has_previous %}
+      <a class="pg" href="?q={{ query }}&page={{ priorities.previous_page_number }}">‹</a>
+    {% else %}<span class="pg disabled">‹</span>{% endif %}
+    {% for i in priorities.paginator.page_range %}
+      {% if priorities.number == i %}<span class="pg active">{{ i }}</span>
+      {% elif i > priorities.number|add:"-3" and i < priorities.number|add:"3" %}
+        <a class="pg" href="?q={{ query }}&page={{ i }}">{{ i }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if priorities.has_next %}
+      <a class="pg" href="?q={{ query }}&page={{ priorities.next_page_number }}">›</a>
+    {% else %}<span class="pg disabled">›</span>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

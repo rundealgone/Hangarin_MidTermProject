@@ -1,0 +1,49 @@
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangarin · Complete Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f4ff; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 16px; }
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px 24px; width: 100%; max-width: 400px; box-shadow: 0 4px 16px rgba(30,58,138,0.08); }
+    .brand { font-size: 22px; font-weight: 700; color: #1d4ed8; margin-bottom: 4px; }
+    .subtitle { color: #6b7280; font-size: 13.5px; margin-bottom: 24px; }
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; font-size: 13.5px; color: #1d4ed8; margin-bottom: 20px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+    .form-group input { width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 9px 12px; font-size: 14px; font-family: 'Inter', sans-serif; color: #111827; transition: border-color 0.15s; }
+    .form-group input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .btn-primary { width: 100%; background: #1d4ed8; color: #fff; border: none; border-radius: 6px; padding: 10px; font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; margin-top: 6px; transition: background 0.15s; }
+    .btn-primary:hover { background: #1e40af; }
+    .error { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; border-radius: 6px; padding: 10px 12px; font-size: 13px; margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">Hangarin</div>
+  <div class="subtitle">Almost there! Complete your account</div>
+  <div class="info-box">You are signing in with your Google account. Please choose a username to continue.</div>
+
+  {% if form.errors %}
+  <div class="error">{{ form.errors }}</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label>Username</label>
+      {{ form.username }}
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      {{ form.email }}
+    </div>
+    <button type="submit" class="btn-primary">Complete Sign Up</button>
+  </form>
+</div>
+</body>
+</html>

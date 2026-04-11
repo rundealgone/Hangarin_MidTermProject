@@ -1,0 +1,17 @@
+{% extends "tasks/base.html" %}
+{% block title %}Delete {{ type }}{% endblock %}
+
+{% block content %}
+<div class="delete-page">
+  <div class="icon">🗑️</div>
+  <h2>Delete {{ type }}?</h2>
+  <p>You're about to delete <strong>"{{ object }}"</strong>. This cannot be undone.</p>
+  <div class="btns">
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-red">Yes, Delete</button>
+    </form>
+    <a href="javascript:history.back()" class="btn btn-white">Cancel</a>
+  </div>
+</div>
+{% endblock %}

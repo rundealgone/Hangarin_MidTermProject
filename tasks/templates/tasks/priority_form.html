@@ -1,0 +1,26 @@
+{% extends "tasks/base.html" %}
+{% block title %}{{ action }} Priority{% endblock %}
+
+{% block nav_actions %}
+  <a href="{% url 'priority_list' %}" class="btn btn-white">Cancel</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header"><h1>{{ action }} Priority</h1></div>
+<div class="form-card">
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+      <label>{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<div class="form-error">{{ field.errors.as_text }}</div>{% endif %}
+    </div>
+    {% endfor %}
+    <div class="form-actions">
+      <button type="submit" class="btn btn-blue">{{ action }} Priority</button>
+      <a href="{% url 'priority_list' %}" class="btn btn-white">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

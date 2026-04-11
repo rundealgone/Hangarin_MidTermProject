@@ -1,0 +1,73 @@
+{% extends "tasks/base.html" %}
+{% block title %}Notes{% endblock %}
+
+{% block nav_actions %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Notes</h1>
+</div>
+
+<form method="get" class="filter-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search notes...">
+  <select name="sort" onchange="this.form.submit()">
+    <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Newest First</option>
+    <option value="created_at"  {% if sort == 'created_at'  %}selected{% endif %}>Oldest First</option>
+  </select>
+  <button type="submit" class="btn btn-blue">Search</button>
+  {% if query %}
+    <a href="{% url 'note_list' %}" class="btn btn-white">Clear</a>
+  {% endif %}
+</form>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>Content</th>
+        <th>Task</th>
+        <th>Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for note in notes %}
+      <tr>
+        <td style="max-width: 400px; color: #374151;">{{ note.content|truncatechars:80 }}</td>
+        <td>
+          <a href="{% url 'task_detail' note.task.pk %}" style="color: #1d4ed8; text-decoration: none;">
+            {{ note.task.title }}
+          </a>
+        </td>
+        <td class="mono text-muted">{{ note.created_at|date:"M d, Y · g:i A" }}</td>
+        <td>
+          <a href="{% url 'note_delete' note.pk %}" class="btn btn-red btn-sm">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="text-align: center; padding: 40px; color: #9ca3af;">No notes found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if notes.has_other_pages %}
+  <div class="pagination">
+    {% if notes.has_previous %}
+      <a class="pg" href="?q={{ query }}&sort={{ sort }}&page={{ notes.previous_page_number }}">‹</a>
+    {% else %}<span class="pg disabled">‹</span>{% endif %}
+    {% for i in notes.paginator.page_range %}
+      {% if notes.number == i %}<span class="pg active">{{ i }}</span>
+      {% elif i > notes.number|add:"-3" and i < notes.number|add:"3" %}
+        <a class="pg" href="?q={{ query }}&sort={{ sort }}&page={{ i }}">{{ i }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if notes.has_next %}
+      <a class="pg" href="?q={{ query }}&sort={{ sort }}&page={{ notes.next_page_number }}">›</a>
+    {% else %}<span class="pg disabled">›</span>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

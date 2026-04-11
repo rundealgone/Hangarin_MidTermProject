@@ -1,0 +1,84 @@
+{% extends "tasks/base.html" %}
+{% block title %}Sub Tasks{% endblock %}
+
+{% block nav_actions %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Sub Tasks</h1>
+</div>
+
+<form method="get" class="filter-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search subtasks...">
+  <select name="status">
+    <option value="">All Statuses</option>
+    {% for val, label in status_choices %}
+      <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-blue">Filter</button>
+  {% if query or status_filter %}
+    <a href="{% url 'subtask_list' %}" class="btn btn-white">Clear</a>
+  {% endif %}
+</form>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Parent Task</th>
+        <th>Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for subtask in subtasks %}
+      <tr>
+        <td style="font-weight: 500;">{{ subtask.title }}</td>
+        <td>
+          {% if subtask.status == "Completed" %}<span class="badge badge-completed">Completed</span>
+          {% elif subtask.status == "In Progress" %}<span class="badge badge-progress">In Progress</span>
+          {% else %}<span class="badge badge-pending">Pending</span>{% endif %}
+        </td>
+        <td>
+          <a href="{% url 'task_detail' subtask.parent_task.pk %}" style="color: #1d4ed8; text-decoration: none;">
+            {{ subtask.parent_task.title }}
+          </a>
+        </td>
+        <td class="mono text-muted">{{ subtask.created_at|date:"M d, Y" }}</td>
+        <td>
+          <div style="display: flex; gap: 4px;">
+            <a href="{% url 'subtask_update' subtask.pk %}" class="btn btn-white btn-sm">Edit</a>
+            <a href="{% url 'subtask_delete' subtask.pk %}" class="btn btn-red btn-sm">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">No subtasks found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if subtasks.has_other_pages %}
+  <div class="pagination">
+    {% if subtasks.has_previous %}
+      <a class="pg" href="?q={{ query }}&status={{ status_filter }}&page={{ subtasks.previous_page_number }}">‹</a>
+    {% else %}<span class="pg disabled">‹</span>{% endif %}
+    {% for i in subtasks.paginator.page_range %}
+      {% if subtasks.number == i %}<span class="pg active">{{ i }}</span>
+      {% elif i > subtasks.number|add:"-3" and i < subtasks.number|add:"3" %}
+        <a class="pg" href="?q={{ query }}&status={{ status_filter }}&page={{ i }}">{{ i }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if subtasks.has_next %}
+      <a class="pg" href="?q={{ query }}&status={{ status_filter }}&page={{ subtasks.next_page_number }}">›</a>
+    {% else %}<span class="pg disabled">›</span>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

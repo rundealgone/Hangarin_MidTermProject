@@ -1,0 +1,62 @@
+{% extends "tasks/base.html" %}
+{% block title %}Categories{% endblock %}
+
+{% block nav_actions %}
+  <a href="{% url 'category_create' %}" class="btn btn-blue">+ New Category</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header"><h1>Categories</h1></div>
+
+<form method="get" class="filter-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search categories...">
+  <button type="submit" class="btn btn-blue">Search</button>
+  {% if query %}<a href="{% url 'category_list' %}" class="btn btn-white">Clear</a>{% endif %}
+</form>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Tasks</th><th>Created</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for category in categories %}
+      <tr>
+        <td style="font-weight: 500;">{{ category.name }}</td>
+        <td class="text-muted mono">{{ category.task_set.count }}</td>
+        <td class="text-muted mono">{{ category.created_at|date:"M d, Y" }}</td>
+        <td>
+          <div style="display: flex; gap: 4px;">
+            <a href="{% url 'category_update' category.pk %}" class="btn btn-white btn-sm">Edit</a>
+            <a href="{% url 'category_delete' category.pk %}" class="btn btn-red btn-sm">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="text-align: center; padding: 40px; color: #9ca3af;">
+          No categories. <a href="{% url 'category_create' %}" style="color: #1d4ed8;">Create one →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if categories.has_other_pages %}
+  <div class="pagination">
+    {% if categories.has_previous %}
+      <a class="pg" href="?q={{ query }}&page={{ categories.previous_page_number }}">‹</a>
+    {% else %}<span class="pg disabled">‹</span>{% endif %}
+    {% for i in categories.paginator.page_range %}
+      {% if categories.number == i %}<span class="pg active">{{ i }}</span>
+      {% elif i > categories.number|add:"-3" and i < categories.number|add:"3" %}
+        <a class="pg" href="?q={{ query }}&page={{ i }}">{{ i }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if categories.has_next %}
+      <a class="pg" href="?q={{ query }}&page={{ categories.next_page_number }}">›</a>
+    {% else %}<span class="pg disabled">›</span>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

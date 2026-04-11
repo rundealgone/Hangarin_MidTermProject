@@ -1,0 +1,106 @@
+{% extends "tasks/base.html" %}
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block nav_actions %}
+  <a href="{% url 'task_update' task.pk %}" class="btn btn-white">Edit</a>
+  <a href="{% url 'task_delete' task.pk %}" class="btn btn-red">Delete</a>
+{% endblock %}
+
+{% block content %}
+
+<div style="margin-bottom: 20px;">
+  <a href="{% url 'task_list' %}" style="color: #9ca3af; font-size: 13px; text-decoration: none;">← Tasks</a>
+  <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
+    <h1 style="font-size: 20px; font-weight: 700;">{{ task.title }}</h1>
+    {% if task.is_overdue %}<span class="badge badge-overdue">Overdue</span>
+    {% elif task.status == "Completed" %}<span class="badge badge-completed">{{ task.status }}</span>
+    {% elif task.status == "In Progress" %}<span class="badge badge-progress">{{ task.status }}</span>
+    {% else %}<span class="badge badge-pending">{{ task.status }}</span>{% endif %}
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div class="detail-cell">
+    <div class="lbl">Category</div>
+    <div class="val">{{ task.category.name|default:"None" }}</div>
+  </div>
+  <div class="detail-cell">
+    <div class="lbl">Priority</div>
+    <div class="val">{% if task.priority %}<span style="display:inline-flex;align-items:center;gap:5px;"><span class="dot dot-{{ task.priority.level }}"></span>{{ task.priority.name }}</span>{% else %}None{% endif %}</div>
+  </div>
+  <div class="detail-cell">
+    <div class="lbl">Deadline</div>
+    <div class="val mono" style="color: {% if task.is_overdue %}#dc2626{% else %}#111827{% endif %}; font-size: 13px;">
+      {% if task.deadline %}{{ task.deadline|date:"M d, Y g:i A" }}{% else %}—{% endif %}
+    </div>
+  </div>
+  <div class="detail-cell">
+    <div class="lbl">Created</div>
+    <div class="val mono" style="font-size: 13px;">{{ task.created_at|date:"M d, Y" }}</div>
+  </div>
+  <div class="detail-cell">
+    <div class="lbl">Updated</div>
+    <div class="val mono" style="font-size: 13px;">{{ task.updated_at|date:"M d, Y" }}</div>
+  </div>
+</div>
+
+{% if task.description %}
+<div class="content-card">
+  <div class="content-card-title">Description</div>
+  <p style="color: #374151; line-height: 1.7; font-size: 13.5px;">{{ task.description }}</p>
+</div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+  <div class="content-card">
+    <div class="content-card-title">Subtasks ({{ subtasks.count }})</div>
+    {% for subtask in subtasks %}
+    <div class="sub-row">
+      <div style="flex: 1;">
+        <div style="font-size: 13.5px; font-weight: 500; margin-bottom: 3px;">{{ subtask.title }}</div>
+        {% if subtask.status == "Completed" %}<span class="badge badge-completed" style="font-size: 11px;">Done</span>
+        {% elif subtask.status == "In Progress" %}<span class="badge badge-progress" style="font-size: 11px;">In Progress</span>
+        {% else %}<span class="badge badge-pending" style="font-size: 11px;">Pending</span>{% endif %}
+      </div>
+      <div style="display: flex; gap: 4px;">
+        <a href="{% url 'subtask_update' subtask.pk %}" class="btn btn-white btn-sm">Edit</a>
+        <a href="{% url 'subtask_delete' subtask.pk %}" class="btn btn-red btn-sm">Del</a>
+      </div>
+    </div>
+    {% empty %}
+    <p style="color: #9ca3af; font-size: 13px; text-align: center; padding: 16px 0;">No subtasks yet.</p>
+    {% endfor %}
+    <form method="post" action="{% url 'subtask_create' task.pk %}">
+      {% csrf_token %}
+      <div class="inline-add">
+        {{ subtask_form.title }}
+        <button type="submit" class="btn btn-blue btn-sm">Add</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-title">Notes ({{ notes.count }})</div>
+    {% for note in notes %}
+    <div class="note-row">
+      <div style="flex: 1;">
+        <div class="note-text">{{ note.content }}</div>
+        <div class="note-time mono">{{ note.created_at|date:"M d, Y · g:i A" }}</div>
+      </div>
+      <a href="{% url 'note_delete' note.pk %}" class="btn btn-red btn-sm">Del</a>
+    </div>
+    {% empty %}
+    <p style="color: #9ca3af; font-size: 13px; text-align: center; padding: 16px 0;">No notes yet.</p>
+    {% endfor %}
+    <form method="post" action="{% url 'note_create' task.pk %}">
+      {% csrf_token %}
+      <div class="inline-add" style="flex-direction: column; align-items: stretch;">
+        {{ note_form.content }}
+        <button type="submit" class="btn btn-blue btn-sm" style="align-self: flex-start; margin-top: 6px;">Add Note</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
