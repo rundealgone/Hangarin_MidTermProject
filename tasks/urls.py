@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('logout/', views.custom_logout, name='custom_logout'),
     # SubTask & Note list pages
     path('subtasks/', views.subtask_list, name='subtask_list'),
     path('notes/', views.note_list, name='note_list'),

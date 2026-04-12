@@ -1,3 +1,4 @@
+from django.contrib.auth import logout as auth_logout
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,7 +9,7 @@ from .models import Task, SubTask, Note, Category, Priority
 from .forms import TaskForm, SubTaskForm, NoteForm, CategoryForm, PriorityForm
 
 
-# ─── Dashboard ────────────────────────────────────────────────────────────────
+
 
 
 @login_required
@@ -34,7 +35,7 @@ def dashboard(request):
     return render(request, 'tasks/dashboard.html', context)
 
 
-# ─── Tasks ────────────────────────────────────────────────────────────────────
+
 
 
 @login_required
@@ -132,7 +133,7 @@ def task_delete(request, pk):
     return render(request, 'tasks/task_confirm_delete.html', {'object': task, 'type': 'Task'})
 
 
-# ─── SubTasks ─────────────────────────────────────────────────────────────────
+
 
 
 @login_required
@@ -175,7 +176,7 @@ def subtask_delete(request, pk):
     return render(request, 'tasks/task_confirm_delete.html', {'object': subtask, 'type': 'Subtask'})
 
 
-# ─── Notes ────────────────────────────────────────────────────────────────────
+
 
 
 @login_required
@@ -202,7 +203,7 @@ def note_delete(request, pk):
     return render(request, 'tasks/task_confirm_delete.html', {'object': note, 'type': 'Note'})
 
 
-# ─── Categories ───────────────────────────────────────────────────────────────
+
 
 
 @login_required
@@ -253,7 +254,7 @@ def category_delete(request, pk):
     return render(request, 'tasks/task_confirm_delete.html', {'object': category, 'type': 'Category'})
 
 
-# ─── Priorities ───────────────────────────────────────────────────────────────
+
 
 
 @login_required
@@ -304,7 +305,7 @@ def priority_delete(request, pk):
     return render(request, 'tasks/task_confirm_delete.html', {'object': priority, 'type': 'Priority'})
 
 
-# ─── SubTask List ─────────────────────────────────────────────────────────────
+
 
 @login_required
 def subtask_list(request):
@@ -327,7 +328,7 @@ def subtask_list(request):
     })
 
 
-# ─── Note List ────────────────────────────────────────────────────────────────
+
 
 @login_required
 def note_list(request):
@@ -346,3 +347,7 @@ def note_list(request):
     except Exception:
         notes = paginator.page(1)
     return render(request, 'tasks/note_list.html', {'notes': notes, 'query': query, 'sort': sort})
+
+def custom_logout(request):
+    auth_logout(request)
+    return redirect('/accounts/login/')
