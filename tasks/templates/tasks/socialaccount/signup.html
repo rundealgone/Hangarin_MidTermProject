@@ -1,80 +1,48 @@
-{% load i18n %}
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hangarin · Sign in with Google</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Hangarin · Complete Sign Up</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f0f4ff;
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 36px 32px;
-      width: 100%; max-width: 400px;
-      box-shadow: 0 4px 16px rgba(30,58,138,0.08);
-      text-align: center;
-    }
-    .brand { font-size: 22px; font-weight: 700; color: #1d4ed8; margin-bottom: 20px; }
-    .google-icon-wrap {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: #f3f4f6; display: flex; align-items: center;
-      justify-content: center; margin: 0 auto 16px;
-    }
-    h2 { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px; }
-    p { color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
-    .btn-continue {
-      width: 100%; background: #1d4ed8; color: #fff;
-      border: none; border-radius: 6px; padding: 11px;
-      font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif;
-      cursor: pointer; transition: background 0.15s; margin-bottom: 10px;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .btn-continue:hover { background: #1e40af; }
-    .btn-cancel {
-      width: 100%; background: #fff; color: #374151;
-      border: 1px solid #d1d5db; border-radius: 6px; padding: 11px;
-      font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif;
-      cursor: pointer; transition: background 0.15s; text-decoration: none;
-      display: block;
-    }
-    .btn-cancel:hover { background: #f9fafb; }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    .card { background: #fff; border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 400px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1); }
+    .brand { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #1e3a8a, #2563eb); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 6px; }
+    .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 24px; }
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 12px 14px; font-size: 13px; color: #1d4ed8; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: #4b5563; margin-bottom: 6px; }
+    .form-group input { width: 100%; padding: 12px 14px; font-size: 14px; border: 1.5px solid #e2e8f0; border-radius: 20px; font-family: 'Inter', sans-serif; }
+    .form-group input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .btn-primary { width: 100%; background: #1d4ed8; color: #fff; border: none; border-radius: 40px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+    .btn-primary:hover { background: #1e40af; }
+    .error { background: #fef2f2; border-left: 4px solid #ef4444; padding: 10px 14px; border-radius: 16px; font-size: 12px; color: #b91c1c; margin-bottom: 16px; }
+    @media (max-width: 480px) { .card { padding: 24px 20px; } .brand { font-size: 24px; } }
   </style>
 </head>
 <body>
 <div class="card">
   <div class="brand">Hangarin</div>
-  <div class="google-icon-wrap">
-    <svg width="24" height="24" viewBox="0 0 48 48">
-      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-    </svg>
-  </div>
-  <h2>Sign in with Google</h2>
-  <p>You are about to sign in using your <strong>Google</strong> account. Click Continue to proceed.</p>
+  <div class="subtitle">Almost there! Complete your account</div>
+  <div class="info-box">You are signing in with your Google account. Please choose a username to continue.</div>
+  {% if form.errors %}
+  <div class="error">{{ form.errors }}</div>
+  {% endif %}
   <form method="post">
     {% csrf_token %}
-    <button type="submit" class="btn-continue">
-      <svg width="18" height="18" viewBox="0 0 48 48">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-      </svg>
-      Continue with Google
-    </button>
+    <div class="form-group">
+      <label>Username</label>
+      {{ form.username }}
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      {{ form.email }}
+    </div>
+    <button type="submit" class="btn-primary">Complete Sign Up</button>
   </form>
-  <a href="{% url 'account_login' %}" class="btn-cancel">Cancel</a>
 </div>
 </body>
 </html>
