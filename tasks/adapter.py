@@ -1,5 +1,4 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.account.utils import perform_login
 from django.contrib.auth.models import User
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
