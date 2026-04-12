@@ -396,10 +396,7 @@
     <div class="navbar-right">
       {% if request.user.is_authenticated %}
         <span style="font-size: 13px; color: #6b7280;">{{ request.user.username }}</span>
-        <form method="post" action="{% url 'account_logout' %}" style="display: inline;">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-white btn-sm">Logout</button>
-        </form>
+        <a href="{% url 'account_logout' %}" class="btn btn-white btn-sm">Logout</a>
       {% endif %}
       {% block nav_actions %}{% endblock %}
     </div>
